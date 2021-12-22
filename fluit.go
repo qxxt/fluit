@@ -5,12 +5,11 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
-	"golang.org/x/term"
 )
 
-const on_error_value int = 80
+const on_error_line_break int = 80
 const arg_padding_length int = 2
+const default_arg_length int = 24
 
 func fmt_margin_wrap(input_text string, margin_length int, line_break_at int) (res string, err error) {
 	if margin_length < 0 {
@@ -19,21 +18,27 @@ func fmt_margin_wrap(input_text string, margin_length int, line_break_at int) (r
 		return "", err
 	}
 	if line_break_at <= 0 {
-		line_break_at = on_error_value
+		line_break_at = on_error_line_break
 	}
-	if margin_length > line_break_at {
-		err = fmt.Errorf("%werror Sprintfmt(): margin_length larger than line_break, using terminal width as line_break; ", err)
-		line_break_at, _, term_getsize_err := term.GetSize(1)
-		if term_getsize_err != nil {
-			err = fmt.Errorf("%werror term.GetSize(): %q; ", err, term_getsize_err)
-			err = fmt.Errorf("%werror Sprintfmt(): can't get terminal size; ", err)
-			return input_text + "\r\n", err
-		}
-		if margin_length > line_break_at {
-			err = fmt.Errorf("%werror Sprintfmt(): margin_length larger than terminal width, set margin to 0; ", err)
-			margin_length = 0
-		}
+	if margin_length >= line_break_at {
+		err = fmt.Errorf("%werror Sprintfmt(): margin_length is larger or equal to line_break; ", err)
+		return input_text + "\r\n", err
 	}
+	/*
+		if margin_length >= line_break_at {
+			err = fmt.Errorf("%werror Sprintfmt(): margin_length larger than line_break, using terminal width as line_break; ", err)
+			line_break_at, _, term_getsize_err := term.GetSize(1)
+			if term_getsize_err != nil {
+				err = fmt.Errorf("%werror term.GetSize(): %q; ", err, term_getsize_err)
+				err = fmt.Errorf("%werror Sprintfmt(): can't get terminal size; ", err)
+				return input_text + "\r\n", err
+			}
+			if margin_length >= line_break_at {
+				err = fmt.Errorf("%werror Sprintfmt(): margin_length larger than terminal width, set margin to 0; ", err)
+				margin_length = 0
+			}
+		}
+	*/
 	margin := strings.Repeat(" ", margin_length)
 	if line_break_at > len(input_text)+margin_length {
 		return margin + input_text + "\r\n", err
@@ -53,15 +58,14 @@ func sprintf_usg_verbose(arg string, desc string, max_arg_length int, line_break
 		fmt.Println(err)
 		return "", err
 	} else if max_arg_length == 0 {
-		max_arg_length = 24
+		max_arg_length = default_arg_length
 	}
 	if line_break_at <= 0 {
-		line_break_at = on_error_value
+		line_break_at = on_error_line_break
 	}
-	if max_arg_length > line_break_at {
+	if max_arg_length >= line_break_at {
 		err = fmt.Errorf("error sprintf_usg(): max_arg_length can't be larger than line_break length.")
-		fmt.Println(err)
-		return "", err
+		max_arg_length = 0
 	}
 	arg_collumn_length := max_arg_length + (arg_padding_length * 2)
 	formatted_desc, err := fmt_margin_wrap(desc, arg_collumn_length, line_break_at)
