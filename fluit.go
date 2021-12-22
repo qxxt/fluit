@@ -39,6 +39,10 @@ func fmt_margin_wrap(input_text string, margin_length int, line_break_at int) (r
 		return margin + input_text + "\r\n", err
 	}
 	max_text_length := strconv.Itoa(line_break_at - margin_length)
+	if !strings.Contains(input_text, " ") {
+		regex_p := regexp.MustCompile("(.{1," + max_text_length + "})")
+		return regex_p.ReplaceAllString(input_text, margin+"$1\r\n"), err
+	}
 	regex_p := regexp.MustCompile("(.{1," + max_text_length + "})(?:\\s|$)")
 	return regex_p.ReplaceAllString(input_text, margin+"$1\r\n"), err
 }
