@@ -7,66 +7,56 @@ import (
 	"golang.org/x/term"
 )
 
-var sprintfm_tests = []struct {
-	margin int
-	text   string
-}{
-	{4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in mattis leo. Integer eu tortor ut libero aliquet dignissim. Etiam nisi metus, consectetur eu luctus vel, malesuada id arcu. Integer egestas velit a velit sollicitudin venenatis. In volutpat nunc posuere ex lobortis maximus. Vivamus fringilla lacinia nisi nec hendrerit. Duis ipsum tortor, congue ut est eu, volutpat pharetra orci."},
-	{10, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in mattis leo. Integer eu tortor ut libero aliquet dignissim. Etiam nisi metus, consectetur eu luctus vel, malesuada id arcu. Integer egestas velit a velit sollicitudin venenatis. In volutpat nunc posuere ex lobortis maximus. Vivamus fringilla lacinia nisi nec hendrerit. Duis ipsum tortor, congue ut est eu, volutpat pharetra orci. "},
-	{4, "Lorem ipsum dolor sit amet,"},
-	{10, "Lorem ipsum dolor sit amet,"},
-	{4, "LoremipsumdolorsitametconsecteturadipiscingelitSedinmattisleoIntegereutortorutliberoaliquetdignissimEtiamnisimetusconsectetureuluctusvelmalesuadaidarcuIntegeregestasvelitavelitsollicitudinvenenatisInvolutpatnuncposuereexlobortismaximusVivamusfringillalacinianisinechendreritDuisipsumtortorcongueutesteuvolutpatpharetraorci"},
-	{10, "LoremipsumdolorsitametconsecteturadipiscingelitSedinmattisleoIntegereutortorutliberoaliquetdignissimEtiamnisimetusconsectetureuluctusvelmalesuadaidarcuIntegeregestasvelitavelitsollicitudinvenenatisInvolutpatnuncposuereexlobortismaximusVivamusfringillalacinianisinechendreritDuisipsumtortorcongueutesteuvolutpatpharetraorci"},
-}
-
-var sprintfm_usg_tests = []struct {
+type sprintfUsgTest struct {
 	arg string
 	msg string
-}{
-	{"--lorem", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in mattis leo. Integer eu tortor ut libero aliquet dignissim. Etiam nisi metus, consectetur eu luctus vel, malesuada id arcu. Integer egestas velit a velit sollicitudin venenatis. In volutpat nunc posuere ex lobortis maximus. Vivamus fringilla lacinia nisi nec hendrerit. Duis ipsum tortor, congue ut est eu, volutpat pharetra orci."},
-	{"--lorem-ipsum", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in mattis leo. Integer eu tortor ut libero aliquet dignissim. Etiam nisi metus, consectetur eu luctus vel, malesuada id arcu. Integer egestas velit a velit sollicitudin venenatis. In volutpat nunc posuere ex lobortis maximus. Vivamus fringilla lacinia nisi nec hendrerit. Duis ipsum tortor, congue ut est eu, volutpat pharetra orci. "},
-	{"--lorem", "Lorem ipsum dolor sit amet,"},
-	{"--lorem-ipsum", "Lorem ipsum dolor sit amet,"},
-	{"--lorem", "LoremipsumdolorsitametconsecteturadipiscingelitSedinmattisleoIntegereutortorutliberoaliquetdignissimEtiamnisimetusconsectetureuluctusvelmalesuadaidarcuIntegeregestasvelitavelitsollicitudinvenenatisInvolutpatnuncposuereexlobortismaximusVivamusfringillalacinianisinechendreritDuisipsumtortorcongueutesteuvolutpatpharetraorci"},
-	{"--lorem-ipsum", "LoremipsumdolorsitametconsecteturadipiscingelitSedinmattisleoIntegereutortorutliberoaliquetdignissimEtiamnisimetusconsectetureuluctusvelmalesuadaidarcuIntegeregestasvelitavelitsollicitudinvenenatisInvolutpatnuncposuereexlobortismaximusVivamusfringillalacinianisinechendreritDuisipsumtortorcongueutesteuvolutpatpharetraorci"},
-	{"--lorem-ipsum-dolor-sit-amet", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in mattis leo. Integer eu tortor ut libero aliquet dignissim. Etiam nisi metus, consectetur eu luctus vel, malesuada id arcu. Integer egestas velit a velit sollicitudin venenatis. In volutpat nunc posuere ex lobortis maximus. Vivamus fringilla lacinia nisi nec hendrerit. Duis ipsum tortor, congue ut est eu, volutpat pharetra orci."},
-	{"--lorem-ipsum-dolor-sit-amet", "LoremipsumdolorsitametconsecteturadipiscingelitSedinmattisleoIntegereutortorutliberoaliquetdignissimEtiamnisimetusconsectetureuluctusvelmalesuadaidarcuIntegeregestasvelitavelitsollicitudinvenenatisInvolutpatnuncposuereexlobortismaximusVivamusfringillalacinianisinechendreritDuisipsumtortorcongueutesteuvolutpatpharetraorci"},
+}
+
+var sprintfUsg_Cmd = []sprintfUsgTest{
+	{"install", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in mattis leo. Integer eu tortor ut libero aliquet dignissim. Etiam nisi metus, consectetur eu luctus vel, malesuada id arcu."},
+	{"build", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in mattis leo. Integer eu tortor ut libero aliquet dignissim. "},
+	{"uninstall", "Lorem ipsum dolor sit amet,"},
+	{"update", "Lorem ipsum dolor sit amet,"},
+	{"blablabla", "LoremipsumdolorsitametconsecteturadipiscingelitSedinmattisleoIntegereutortorutliberoaliquetdignissim"},
+}
+
+var sprintfUsg_Flag = []sprintfUsgTest{
+	{"-a", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in mattis leo. "},
+	{"-b", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in mattis leo. "},
+	{"-c", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in mattis leo. "},
+	{"--if-the-arguments-is-longer-than-specified-max-size", "It will used up the entire line and the desc will use the line after it while still keeping the margin. "},
 }
 
 func TestTerminal(t *testing.T) {
-	is_terminal := term.IsTerminal(1)
-	terminal_width, _, err_getsize := term.GetSize(1)
-	_, err_getstate := term.GetState(1)
-	if is_terminal == false {
+	if term.IsTerminal(1) == false {
 		t.Errorf("error term.IsTerminal(): not running on terminal, or is not recognized as one.")
 	}
-	if err_getstate != nil {
-		t.Errorf("error term.GetState(): %q.", err_getstate)
+	_, errGetstate := term.GetState(1)
+	if errGetstate != nil {
+		t.Errorf("error term.GetState(): %q.", errGetstate)
 	}
-	if err_getsize != nil {
-		t.Errorf("error term.GetSize(): %q", err_getsize)
+	terminalWidth, _, errGetsize := term.GetSize(1)
+	if errGetsize != nil {
+		t.Errorf("error term.GetSize(): %q", errGetsize)
 		fmt.Printf("Terminal Width: unknown\r\n")
-		defer t_fluits(0, t)
-		t.FailNow()
+		terminalWidth = 70
+	} else {
+		fmt.Printf("Terminal Width: %d\r\n", terminalWidth)
 	}
-	fmt.Printf("Terminal Width: %d\r\n", terminal_width)
-	t_fluits(terminal_width, t)
-}
-
-func t_fluits(terminal_width int, t *testing.T) {
-	for index, _ := range sprintfm_tests {
-		formatted, err := fmt_margin_wrap(sprintfm_tests[index].text, sprintfm_tests[index].margin, terminal_width)
-		if err != nil {
-			fmt.Println(err)
-		}
+	fmt.Println(Sprintfm("go-fluit is text formatter for wraping text, adding margin and building cli-usage. It use regex to split text based on specified breakpoint.", 0, terminalWidth))
+	fmt.Println(Sprintfm("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in mattis leo. Integer eu tortor ut libero aliquet dignissim. Etiam nisi metus, consectetur eu luctus vel, malesuada id arcu. Integer egestas velit a velit sollicitudin venenatis. In volutpat nunc posuere ex lobortis maximus. Vivamus fringilla lacinia nisi nec hendrerit. Duis ipsum tortor, congue ut est eu, volutpat pharetra orci.", 4, terminalWidth))
+	fmt.Println(Sprintfm("LoremipsumdolorsitametconsecteturadipiscingelitSedinmattisleoIntegereutortorutliberoaliquetdignissimEtiamnisimetusconsectetureuluctusvelmalesuadaidarcuIntegeregestasvelitavelitsollicitudinvenenatisInvolutpatnuncposuereexlobortismaximusVivamusfringillalacinianisinechendreritDuisipsumtortorcongueutesteuvolutpatpharetraorci", 4, terminalWidth))
+	fmt.Printf(Sprintfm("Avaliable commands:", 0, terminalWidth))
+	const maxCmdLength int = 10
+	for _, sprintfmUsgTest := range sprintfUsg_Cmd {
+		formatted := SprintfUsg(sprintfmUsgTest.arg, sprintfmUsgTest.msg, maxCmdLength, terminalWidth)
 		fmt.Printf(formatted)
 	}
-	const max_args_length int = 20
-	for index, _ := range sprintfm_usg_tests {
-		formatted, err := sprintf_usg_verbose(sprintfm_usg_tests[index].arg, sprintfm_usg_tests[index].msg, max_args_length, terminal_width)
-		if err != nil {
-			fmt.Println(err)
-		}
+	fmt.Println("")
+	fmt.Printf(Sprintfm("Avaliable flag:", 0, terminalWidth))
+	const maxFlagLength int = 5
+	for _, sprintfmUsgTest := range sprintfUsg_Flag {
+		formatted := SprintfUsg(sprintfmUsgTest.arg, sprintfmUsgTest.msg, maxFlagLength, terminalWidth)
 		fmt.Printf(formatted)
 	}
 }
