@@ -7,6 +7,33 @@ import (
 	"github.com/qxxt/fluit"
 )
 
+func ExampleSetBreakpoint() {
+	fluit.SetBreakpoint(20)
+	fmt.Print(fluit.Sprintwrap(0, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod pharetra sodales. Aenean ac massa dictum, gravida nisl non, fermentum turpis."))
+	fmt.Print(fluit.Sprintwrap(5, strings.Repeat("-+", 5)))
+
+	fluit.SetBreakpoint(60)
+	fmt.Print(fluit.Sprintwrap(0, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod pharetra sodales. Aenean ac massa dictum, gravida nisl non, fermentum turpis."))
+	fmt.Print(fluit.Sprintwrap(5, strings.Repeat("-+", 20)))
+
+	// Output:
+	// Lorem ipsum dolor
+	// sit amet,
+	// consectetur
+	// adipiscing elit.
+	// Vivamus euismod
+	// pharetra sodales.
+	// Aenean ac massa
+	// dictum, gravida nisl
+	// non, fermentum
+	// turpis.
+	//      -+-+-+-+-+
+	// Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+	// Vivamus euismod pharetra sodales. Aenean ac massa dictum,
+	// gravida nisl non, fermentum turpis.
+	//      -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+}
+
 func ExampleSprintwrap() {
 	// In essence fluit is a string formatter. It don't prints.
 	str := fluit.Sprintwrap(4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod pharetra sodales. Aenean ac massa dictum, gravida nisl non, fermentum turpis.")
@@ -65,4 +92,51 @@ func ExampleUsgs() {
 	//               risus.
 	//   --update    Proin accumsan orci vel ante consequat, ut
 	//               facilisis ipsum congue.
+}
+
+func ExampleUsgs_SetArgLen() {
+	u := fluit.Usgs{}
+	u.AddUsg("--help", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis aliquam ante.")
+	u.AddUsg("--dereference-command-line-symlink-to-dir", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis aliquam ante.")
+	u.AddUsg("--another-help", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis aliquam ante.")
+	u.PrintUsg()
+
+	u.SetArgLen(14)
+	u.AddUsg("--help", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis aliquam ante.")
+	u.AddUsg("--dereference-command-line-symlink-to-dir", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis aliquam ante.")
+	u.AddUsg("--another-help", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis aliquam ante.")
+	u.PrintUsg()
+
+	// Output:
+	//   --help                                     Lorem ipsum
+	//                                              dolor sit amet,
+	//                                              consectetur
+	//                                              adipiscing
+	//                                              elit. Integer
+	//                                              quis aliquam
+	//                                              ante.
+	//   --dereference-command-line-symlink-to-dir  Lorem ipsum
+	//                                              dolor sit amet,
+	//                                              consectetur
+	//                                              adipiscing
+	//                                              elit. Integer
+	//                                              quis aliquam
+	//                                              ante.
+	//   --another-help                             Lorem ipsum
+	//                                              dolor sit amet,
+	//                                              consectetur
+	//                                              adipiscing
+	//                                              elit. Integer
+	//                                              quis aliquam
+	//                                              ante.
+	//   --help          Lorem ipsum dolor sit amet, consectetur
+	//                   adipiscing elit. Integer quis aliquam
+	//                   ante.
+	//   --dereference-command-line-symlink-to-dir
+	//                   Lorem ipsum dolor sit amet, consectetur
+	//                   adipiscing elit. Integer quis aliquam
+	//                   ante.
+	//   --another-help  Lorem ipsum dolor sit amet, consectetur
+	//                   adipiscing elit. Integer quis aliquam
+	//                   ante.
 }
