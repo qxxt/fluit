@@ -19,9 +19,9 @@ func TestSprintUsg(t *testing.T) {
 	SetBreakpoint(70)
 	var (
 		got, want   string
-		gots, wants Usages
+		gots, wants Usgs
 	)
-	got = SprintUsg("--hello", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in mattis leo. Integer eu tortor ut libero aliquet dignissim. Etiam nisi metus, consectetur eu luctus vel, malesuada id arcu", 8)
+	got = SprintUsg(8, "--hello", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in mattis leo. Integer eu tortor ut libero aliquet dignissim. Etiam nisi metus, consectetur eu luctus vel, malesuada id arcu")
 	want = `  --hello   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
             Sed in mattis leo. Integer eu tortor ut libero aliquet
             dignissim. Etiam nisi metus, consectetur eu luctus vel,
@@ -37,7 +37,7 @@ func TestSprintUsg(t *testing.T) {
 		f := flags[i]
 		gots.AddUsg(f.arg, f.msg)
 		wants.usageItem =
-			append(wants.usageItem, usage{f.arg, f.msg})
+			append(wants.usageItem, usg{f.arg, f.msg})
 	}
 	if !reflect.DeepEqual(gots, wants) {
 		t.Error("Usages's object not valid")
@@ -115,4 +115,5 @@ euvolutpatpharetraorci
 	if got != want {
 		t.Error("invalid output on hashlike input")
 	}
+	SetBreakpoint(60) // Fix example_test.go
 }

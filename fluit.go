@@ -7,22 +7,17 @@ import (
 	"strings"
 )
 
-const (
-	defaultBP int = 60
-)
-
 var (
-	breakpoint = defaultBP
+	breakpoint = 60
 )
 
-type usage struct {
+type usg struct {
 	argu, descr string
 }
 
-type Usages struct {
-	usageItem  []usage
-	maxArgLen  int
-	longArgLen int
+type Usgs struct {
+	usageItem             []usg
+	maxArgLen, longArgLen int
 }
 
 // Sprintwrap() wraps s with breakpoint as specified using
@@ -58,7 +53,7 @@ func Sprintwrap(marginLen int, s ...interface{}) string {
 // SprintUsg() build a usage and return it as string. If the length of
 // arg is larger than maxArgLen, arg will have its own line. For building usages
 // en mass. You should use type Usages instead.
-func SprintUsg(arg, desc string, maxArgLen int) string {
+func SprintUsg(maxArgLen int, arg, desc string) string {
 	const argPadLen int = 2 // argument's padding length for both side
 	var (
 		fmtDesc     string // Text wrapped Arg's Description
@@ -106,11 +101,11 @@ func SetBreakpoint(bp int) {
 // AddUsg() method adds usages which can later be printed using PrintUsg()
 // If SetArglen() is not specified. It will compare the len() of arg
 // and replace the current longest with it if larger.
-func (u *Usages) AddUsg(arg, desc string) {
+func (u *Usgs) AddUsg(arg, desc string) {
 	if u.maxArgLen == 0 && len(arg) > u.longArgLen {
 		u.longArgLen = len(arg)
 	}
-	u.usageItem = append(u.usageItem, usage{arg, desc})
+	u.usageItem = append(u.usageItem, usg{arg, desc})
 }
 
 // SetArgLen() adds a constant width to argument's collumn that is not.
@@ -120,7 +115,7 @@ func (u *Usages) AddUsg(arg, desc string) {
 // it to affect the argument collumn size.
 // By default, if the argument size is longer than the specified
 // maximum argument length, it will have its own line.
-func (u *Usages) SetArgLen(l int) {
+func (u *Usgs) SetArgLen(l int) {
 	if l > 0 {
 		u.maxArgLen = l
 	}
@@ -129,7 +124,7 @@ func (u *Usages) SetArgLen(l int) {
 // PrintUsg() prints all the added usages to terminal.
 // Upon calling this method the object is reseted to nil, and can be used // again.
 // breakpoint value from SetBreakpoint() is not affected.
-func (u *Usages) PrintUsg() {
+func (u *Usgs) PrintUsg() {
 	var b int
 	if u.maxArgLen != 0 {
 		b = u.maxArgLen
@@ -137,7 +132,7 @@ func (u *Usages) PrintUsg() {
 		b = u.longArgLen
 	}
 	for _, usage := range u.usageItem {
-		fmt.Print(SprintUsg(usage.argu, usage.descr, b))
+		fmt.Print(SprintUsg(b, usage.argu, usage.descr))
 	}
-	*u = Usages{}
+	*u = Usgs{}
 }
