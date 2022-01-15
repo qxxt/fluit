@@ -1,3 +1,3 @@
-module github.com/qxxt/go-fluit
+module github.com/qxxt/fluit
 
 go 1.17

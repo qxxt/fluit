@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/qxxt/go-fluit"
+	"github.com/qxxt/fluit"
 )
 
 func ExampleSprintwrap() {
