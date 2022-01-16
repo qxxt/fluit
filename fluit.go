@@ -15,20 +15,22 @@ type usg struct {
 	argu, descr string
 }
 
-type Usgs struct {
+type Usages struct {
 	usageItem             []usg
 	maxArgLen, longArgLen int
 }
 
-// Sprintwrap() wraps s with breakpoint as specified using
-// SetBreakpoint(). If no breakpoint is set, it will use the
+// SprintfWrap() wraps string with breakpoint as specified using
+// SetBreakpoint(). If breakpoint is not set, it will use the
 // default value of 60.
+//
 // It also add margin with the size of marginLen. If marginLen is set to
 // 0, it will only be wrapped. The marginLen will be set to 0 if
 // it's negative or if it's larger than the breakpoint length.
-// It return a string without printing.
-func Sprintwrap(marginLen int, s ...interface{}) string {
-	sstr := fmt.Sprint(s...)
+//
+// It returns string without printing
+func SprintfWrap(marginLen int, format string, a ...interface{}) string {
+	sstr := fmt.Sprintf(format, a...)
 	if marginLen < 0 || marginLen >= breakpoint {
 		marginLen = 0
 	}
@@ -52,7 +54,7 @@ func Sprintwrap(marginLen int, s ...interface{}) string {
 
 // SprintUsg() build a usage and return it as string. If the length of
 // arg is larger than maxArgLen, arg will have its own line. For building usages
-// en mass. You should use type Usages instead.
+// en mass. You should use type and method Usgs instead.
 func SprintUsg(maxArgLen int, arg, desc string) string {
 	const argPadLen int = 2 // argument's padding length for both side
 	var (
@@ -66,10 +68,10 @@ func SprintUsg(maxArgLen int, arg, desc string) string {
 		maxArgLen = 0
 	}
 	argCol = maxArgLen + (argPadLen * 2)
-	fmtDesc = Sprintwrap(argCol, desc)
+	fmtDesc = SprintfWrap(argCol, desc)
 	argLength := len(arg)
 	if argLength > maxArgLen {
-		fmtArg = Sprintwrap(argPadLen, arg)
+		fmtArg = SprintfWrap(argPadLen, arg)
 		return fmtArg + fmtDesc
 	}
 	argLeftPad = strings.Repeat(" ", argPadLen)
@@ -81,50 +83,56 @@ func SprintUsg(maxArgLen int, arg, desc string) string {
 		fmtArg, 1)
 }
 
-// SetBreakpoint sets at what length the texts.should
+// SetBreakpoint sets at what length the inputs should
 // break a newline. Console with the column length
 // of 70 may only use 70 breakpoint or less. If breakpoint is not
 // set, it will use the default value of 60.
 //
 // NOTE: You can get the width of the console using
-// /x/term.GetScreenwidth(). That allows you to create a
+// https://pkg.go.dev/golang.org/x/term#GetSize. That will allows you to create a
 // breakpoint which responsive to user's screen width. Sounds great.
-// However not all console are supported, eg emacs mini shell XD.
-// It may return 0 or -1 value. In that case. The value will be
-// Ignored and default to 60.
+// However not all console are supported, eg emacs mini shell
+// is not a terminal and don't have width, they will return
+// error. It may return 0 or -1 value.
+//
+// If bp is 0 or lower it will be ignored and stay to default
+// or current value (if it's already set).
 func SetBreakpoint(bp int) {
-	if bp > 0 {
+	if bp >= 0 {
 		breakpoint = bp
 	}
 }
 
-// AddUsg() method adds usages which can later be printed using PrintUsg()
-// If SetArglen() is not specified. It will compare the len() of arg
-// and replace the current longest with it if larger.
-func (u *Usgs) AddUsg(arg, desc string) {
+// AddUsg() method adds usages which can later be printed using
+// PrintUsg().
+//
+// Unless u.SetArgLen() is set. The width of argument collumn
+// will be relative to the largest length of args.
+func (u *Usages) AddUsg(arg, desc string) {
 	if u.maxArgLen == 0 && len(arg) > u.longArgLen {
 		u.longArgLen = len(arg)
 	}
 	u.usageItem = append(u.usageItem, usg{arg, desc})
 }
 
-// SetArgLen() adds a constant width to argument's collumn that is not.
-// relative to the longest argument length.
+// SetArgLen() sets a constant width to argument collumn that is not
+// relative to the largest args length.
 //
 // This is useful --if-you-have-a-longer-than-usual-flag. And don't want
 // it to affect the argument collumn size.
-// By default, if the argument size is longer than the specified
-// maximum argument length, it will have its own line.
-func (u *Usgs) SetArgLen(l int) {
+//
+// By default, if the argument len is larger than the specified
+// l, it will have its own line.
+func (u *Usages) SetArgLen(l int) {
 	if l > 0 {
 		u.maxArgLen = l
 	}
 }
 
-// PrintUsg() prints all the added usages to terminal.
-// Upon calling this method the object is reseted to nil, and can be used // again.
-// breakpoint value from SetBreakpoint() is not affected.
-func (u *Usgs) PrintUsg() {
+// PrintUsg() prints all the added usages to console.
+//
+// Upon calling this method the object is reseted to nil, and can be used // again. Breakpoint value from SetBreakpoint() is not affected.
+func (u *Usages) PrintUsg() {
 	var b int
 	if u.maxArgLen != 0 {
 		b = u.maxArgLen
@@ -134,5 +142,5 @@ func (u *Usgs) PrintUsg() {
 	for _, usage := range u.usageItem {
 		fmt.Print(SprintUsg(b, usage.argu, usage.descr))
 	}
-	*u = Usgs{}
+	*u = Usages{}
 }
