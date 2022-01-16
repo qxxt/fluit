@@ -9,12 +9,12 @@ import (
 
 func ExampleSetBreakpoint() {
 	fluit.SetBreakpoint(20)
-	fmt.Print(fluit.Sprintwrap(0, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod pharetra sodales. Aenean ac massa dictum, gravida nisl non, fermentum turpis."))
-	fmt.Print(fluit.Sprintwrap(5, strings.Repeat("-+", 5)))
+	fmt.Print(fluit.SprintfWrap(0, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod pharetra sodales. Aenean ac massa dictum, gravida nisl non, fermentum turpis."))
+	fmt.Print(fluit.SprintfWrap(5, strings.Repeat("-+", 5)))
 
 	fluit.SetBreakpoint(60)
-	fmt.Print(fluit.Sprintwrap(0, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod pharetra sodales. Aenean ac massa dictum, gravida nisl non, fermentum turpis."))
-	fmt.Print(fluit.Sprintwrap(5, strings.Repeat("-+", 20)))
+	fmt.Print(fluit.SprintfWrap(0, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod pharetra sodales. Aenean ac massa dictum, gravida nisl non, fermentum turpis."))
+	fmt.Print(fluit.SprintfWrap(5, strings.Repeat("-+", 20)))
 
 	// Output:
 	// Lorem ipsum dolor
@@ -34,14 +34,14 @@ func ExampleSetBreakpoint() {
 	//      -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 }
 
-func ExampleSprintwrap() {
+func ExampleSprintfWrap() {
 	// In essence fluit is a string formatter. It don't prints.
-	str := fluit.Sprintwrap(4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod pharetra sodales. Aenean ac massa dictum, gravida nisl non, fermentum turpis.")
+	str := fluit.SprintfWrap(4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod pharetra sodales. Aenean ac massa dictum, gravida nisl non, fermentum turpis.")
 	fmt.Print(str)
-	fmt.Print(fluit.Sprintwrap(10, strings.Repeat("-+", 20)))
+	fmt.Print(fluit.SprintfWrap(10, strings.Repeat("-+", 20)))
 
 	//If the margin is set to 0, it will not be margined but still wrapped according to breakpoint
-	fmt.Print(fluit.Sprintwrap(0, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod pharetra sodales. Aenean ac massa dictum, gravida nisl non, fermentum turpis."))
+	fmt.Print(fluit.SprintfWrap(0, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod pharetra sodales. Aenean ac massa dictum, gravida nisl non, fermentum turpis."))
 
 	// Output:
 	//     Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -68,8 +68,8 @@ func ExampleSprintUsg() {
 	//               lobortis dui. In eu enim a urna cursus porta.
 }
 
-func ExampleUsgs() {
-	var u fluit.Usgs
+func ExampleUsages() {
+	var u fluit.Usages
 	u.SetArgLen(10)
 	u.AddUsg("--help", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis aliquam ante.")
 	u.AddUsg("--build", "Nunc gravida metus non turpis sagittis, at lacinia magna tristique. Suspendisse vel ullamcorper eros. Sed eget lacinia urna.")
@@ -94,8 +94,8 @@ func ExampleUsgs() {
 	//               facilisis ipsum congue.
 }
 
-func ExampleUsgs_SetArgLen() {
-	u := fluit.Usgs{}
+func ExampleUsages_SetArgLen() {
+	u := fluit.Usages{}
 	u.AddUsg("--help", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis aliquam ante.")
 	u.AddUsg("--dereference-command-line-symlink-to-dir", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis aliquam ante.")
 	u.AddUsg("--another-help", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis aliquam ante.")

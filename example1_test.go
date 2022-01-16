@@ -8,10 +8,10 @@ import (
 
 func Example() {
 	fluit.SetBreakpoint(70)
-	fmt.Print(fluit.Sprintwrap(4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nisi magna, fermentum sit amet quam id, scelerisque elementum enim. Donec malesuada accumsan porttitor. In neque libero, sollicitudin vitae interdum ut, semper lacinia mauris. Integer auctor, nisl at commodo feugiat, justo urna varius arcu, a lacinia mi mauris sit amet purus."))
+	fmt.Print(fluit.SprintfWrap(4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nisi magna, fermentum sit amet quam id, scelerisque elementum enim. Donec malesuada accumsan porttitor. In neque libero, sollicitudin vitae interdum ut, semper lacinia mauris. Integer auctor, nisl at commodo feugiat, justo urna varius arcu, a lacinia mi mauris sit amet purus."))
 
 	fmt.Print("\nUsages:\n")
-	u := fluit.Usgs{}
+	u := fluit.Usages{}
 	u.AddUsg("lorem", "Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
 	u.AddUsg("ipsum", "Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
 	u.AddUsg("sit", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nisi magna, fermentum sit amet quam id, scelerisque elementum enim.")

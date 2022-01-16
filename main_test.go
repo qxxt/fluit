@@ -19,7 +19,7 @@ func TestSprintUsg(t *testing.T) {
 	SetBreakpoint(70)
 	var (
 		got, want   string
-		gots, wants Usgs
+		gots, wants Usages
 	)
 	got = SprintUsg(8, "--hello", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in mattis leo. Integer eu tortor ut libero aliquet dignissim. Etiam nisi metus, consectetur eu luctus vel, malesuada id arcu")
 	want = `  --hello   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -51,7 +51,7 @@ var loremHashLike string = `LoremipsumdolorsitametconsecteturadipiscingelitSedin
 func TestSprintwrap(t *testing.T) {
 	var got, want string
 	SetBreakpoint(60)
-	got = Sprintwrap(0, lorem)
+	got = SprintfWrap(0, lorem)
 	want = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
 in mattis leo. Integer eu tortor ut libero aliquet
 dignissim. Etiam nisi metus, consectetur eu luctus vel,
@@ -63,7 +63,7 @@ ipsum tortor, congue ut est eu, volutpat pharetra orci.
 	if got != want {
 		t.Error("Invalid output on 0 margin")
 	}
-	got = Sprintwrap(0, loremHashLike)
+	got = SprintfWrap(0, loremHashLike)
 	want = `LoremipsumdolorsitametconsecteturadipiscingelitSedinmattisle
 oIntegereutortorutliberoaliquetdignissimEtiamnisimetusconsec
 tetureuluctusvelmalesuadaidarcuIntegeregestasvelitavelitsoll
@@ -75,7 +75,7 @@ euvolutpatpharetraorci
 		t.Error("Invalid output on 0 margin and hashlike input")
 	}
 	SetBreakpoint(30)
-	got = Sprintwrap(4, lorem)
+	got = SprintfWrap(4, lorem)
 	want = `    Lorem ipsum dolor sit
     amet, consectetur
     adipiscing elit. Sed in
@@ -97,7 +97,7 @@ euvolutpatpharetraorci
 	if got != want {
 		t.Error("Invalid output")
 	}
-	got = Sprintwrap(4, loremHashLike)
+	got = SprintfWrap(4, loremHashLike)
 	want = `    Loremipsumdolorsitametcons
     ecteturadipiscingelitSedin
     mattisleoIntegereutortorut
