@@ -56,16 +56,16 @@ func TestSprintwrap(t *testing.T) {
 	UserBreakpoint = 60
 
 	got = SprintWrap(0, lorem)
-	want = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Sed in mattis leo. Integer eu tortor ut libero aliquet
+	want = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+in mattis leo. Integer eu tortor ut libero aliquet
 dignissim. Etiam nisi metus, consectetur eu luctus vel,
 malesuada id arcu. Integer egestas velit a velit
-sollicitudin venenatis. In volutpat nunc posuere ex
-lobortis maximus. Vivamus fringilla lacinia nisi nec
-hendrerit. Duis ipsum tortor, congue ut est eu, volutpat
-pharetra orci.`
+sollicitudin venenatis. In volutpat nunc posuere ex lobortis
+maximus. Vivamus fringilla lacinia nisi nec hendrerit. Duis
+ipsum tortor, congue ut est eu, volutpat pharetra orci.`
 
 	if got != want {
+		fmt.Println(got)
 		t.Error("Invalid output on 0 margin")
 	}
 
@@ -77,6 +77,8 @@ icitudinvenenatisInvolutpatnuncposuereexlobortismaximusVivam
 usfringillalacinianisinechendreritDuisipsumtortorcongueutest
 euvolutpatpharetraorci`
 	if got != want {
+		fmt.Println(got)
+		fmt.Println(want)
 		t.Error("Invalid output on 0 margin and hashlike input")
 	}
 
@@ -92,17 +94,17 @@ euvolutpatpharetraorci`
     metus, consectetur eu
     luctus vel, malesuada id
     arcu. Integer egestas
-    velit a velit
-    sollicitudin venenatis.
-    In volutpat nunc posuere
-    ex lobortis maximus.
-    Vivamus fringilla lacinia
-    nisi nec hendrerit. Duis
-    ipsum tortor, congue ut
-    est eu, volutpat pharetra
-    orci.`
+    velit a velit sollicitudin
+    venenatis. In volutpat
+    nunc posuere ex lobortis
+    maximus. Vivamus fringilla
+    lacinia nisi nec
+    hendrerit. Duis ipsum
+    tortor, congue ut est eu,
+    volutpat pharetra orci.`
 
 	if got != want {
+		fmt.Println(got)
 		t.Error("Invalid output")
 	}
 
