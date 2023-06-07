@@ -2,145 +2,116 @@ package fluit
 
 import (
 	"fmt"
-	"regexp"
-	"strconv"
-	"strings"
 )
 
-var (
-	breakpoint = 60
-)
-
-type usg struct {
-	argu, descr string
-}
-
-type Usages struct {
-	usageItem             []usg
-	maxArgLen, longArgLen int
-}
-
-// SprintfWrap() wraps string with breakpoint as specified using
-// SetBreakpoint(). If breakpoint is not set, it will use the
-// default value of 60.
+// This is the default breakpoint.
 //
-// It also add margin with the size of marginLen. If marginLen is set to
-// 0, it will only be wrapped. The marginLen will be set to 0 if
-// it's negative or if it's larger than the breakpoint length.
-//
-// It returns string without printing
-func SprintfWrap(marginLen int, format string, a ...interface{}) string {
-	sstr := fmt.Sprintf(format, a...)
-	if marginLen < 0 || marginLen >= breakpoint {
-		marginLen = 0
-	}
-	margin := strings.Repeat(" ", marginLen)
-	if breakpoint > len(sstr)+marginLen {
-		return margin + sstr + "\n"
-	}
-	var ptn string
-	lineBstr := strconv.Itoa(breakpoint - marginLen)
-	// if there is less [:space:] than there is possible line. It will be
-	// treated as a hash like.
-	if !strings.Contains(sstr, " ") ||
-		strings.Count(sstr, " ") < len(sstr)/(breakpoint-marginLen) {
-		ptn = `(.{1,` + lineBstr + `})`
-	} else {
-		ptn = `(.{1,` + lineBstr + `})(?:\s|$)`
-	}
-	return regexp.MustCompile(ptn).
-		ReplaceAllString(sstr, margin+"$1\n")
-}
+// When UserBreakpoint is <= 0. This value will be used instead.
+const DefaultBreakpoint int = 60
 
-// SprintUsg() build a usage and return it as string. If the length of
-// arg is larger than maxArgLen, arg will have its own line. For building usages
-// en mass. You should use type and method Usgs instead.
-func SprintUsg(maxArgLen int, arg, desc string) string {
-	const argPadLen int = 2 // argument's padding length for both side
+// UserBreakpoint sets at what length the inputs should break a
+// newline. Console with the column length of 70 may only use
+// 70 breakpoint or less. If breakpoint is not set, it will
+// use the default value from DefaultBreakpoint (60).
+//
+// You can get the length of the console using from:
+// https://pkg.go.dev/golang.org/x/term#GetSize.
+//
+// This allows you to create a breakpoint that is
+// responsive to user's console length. However not all console
+// are supported by it.
+//
+// For example, emacs mini shell is not a terminal and don't have length,
+// it will return loopback value of 0 or -1 value.
+var UserBreakpoint = -1
+
+// SprintfWrap() formats string using fmt.Sprintf and then wraps them with
+// breakpoint from UserBreakpoint. If UserBreakpoint is not set, it will use
+// the default value of 60 from constant Breakpoint.
+//
+// It also add margin with the size of marginLength. If marginLength is set to
+// 0, it will only be wrapped. The marginLength will be set to 0 if
+// it's negative or if it's larger than the breakpoint's length.
+//
+// It returns string without print them to stdout.
+func SprintWrap(marginLength int, s string) string {
+	bp := DefaultBreakpoint
+	if UserBreakpoint > 0 {
+		bp = UserBreakpoint
+	}
+
+	if marginLength > bp {
+		marginLength = 0
+	}
+
+	marginString := fmt.Sprintf("%*s", marginLength, "")
+
+	bp -= marginLength
+
+	const isLetter = 1
+
 	var (
-		fmtDesc     string // Text wrapped Arg's Description
-		fmtArg      string // Formatted Arg. Aka, padded string
-		argCol      int    // Arg collumn length. Its maxLen + both side padding length
-		argLeftPad  string // self explanatory
-		argRightPad string // Maximum argument's length - its actual length + padding length.
+		statusBit   int
+		columnIndex int
+		spaceIndex  = -1
 	)
-	if maxArgLen < 0 || maxArgLen >= breakpoint {
-		maxArgLen = 0
+
+	s = marginString + s
+	for i := marginLength; i < len(s); i++ {
+		if columnIndex == bp {
+			columnIndex = 0
+
+			// SpaceIndex is -1 when there is no space found in the entire column.
+			// Mostly happen when the input is a long hash text.
+			if spaceIndex == -1 {
+				s = s[:i] + "\n" + marginString + s[i:]
+				i += marginLength
+			} else {
+				s = s[:spaceIndex] + "\n" + marginString + s[spaceIndex+1:]
+				i = spaceIndex + marginLength
+			}
+
+			statusBit = 0
+			spaceIndex = -1
+			columnIndex = 0
+			continue
+		}
+
+		switch s[i] {
+		case ' ', '\t':
+
+			// Only set spaceIndex when there is letter before it.
+			// to allow leading space.
+			if statusBit&isLetter != 0 {
+				spaceIndex = i
+			}
+
+		case '\n':
+			s = s[:i] + "\n" + marginString + s[i+1:]
+			i += marginLength
+			statusBit = 0
+			spaceIndex = -1
+			columnIndex = 0
+			continue
+
+		default:
+			if statusBit&isLetter == 0 {
+				statusBit |= isLetter
+			}
+		}
+
+		columnIndex++
 	}
-	argCol = maxArgLen + (argPadLen * 2)
-	fmtDesc = SprintfWrap(argCol, desc)
-	argLength := len(arg)
-	if argLength > maxArgLen {
-		fmtArg = SprintfWrap(argPadLen, arg)
-		return fmtArg + fmtDesc
-	}
-	argLeftPad = strings.Repeat(" ", argPadLen)
-	argRightPad = strings.Repeat(" ", maxArgLen-argLength+argPadLen)
-	fmtArg = argLeftPad + arg + argRightPad
-	return strings.Replace(
-		fmtDesc,
-		strings.Repeat(" ", argCol),
-		fmtArg, 1)
+
+	return s
 }
 
-// SetBreakpoint sets at what length the inputs should
-// break a newline. Console with the column length
-// of 70 may only use 70 breakpoint or less. If breakpoint is not
-// set, it will use the default value of 60.
-//
-// NOTE: You can get the width of the console using
-// https://pkg.go.dev/golang.org/x/term#GetSize. That will allows you to create a
-// breakpoint which responsive to user's screen width. Sounds great.
-// However not all console are supported, eg emacs mini shell
-// is not a terminal and don't have width, they will return
-// error. It may return 0 or -1 value.
-//
-// If bp is 0 or lower it will be ignored and stay to default
-// or current value (if it's already set).
-func SetBreakpoint(bp int) {
-	if bp >= 0 {
-		breakpoint = bp
-	}
+// Format string with SprintWrap and print them.
+func PrintfWrap(marginLength int, format string, a ...interface{}) (int, error) {
+	return fmt.Print(SprintWrap(marginLength, fmt.Sprintf(format, a)))
 }
 
-// AddUsg() method adds usages which can later be printed using
-// PrintUsg().
-//
-// Unless u.SetArgLen() is set. The width of argument collumn
-// will be relative to the largest length of args.
-func (u *Usages) AddUsg(arg, desc string) {
-	if u.maxArgLen == 0 && len(arg) > u.longArgLen {
-		u.longArgLen = len(arg)
-	}
-	u.usageItem = append(u.usageItem, usg{arg, desc})
-}
-
-// SetArgLen() sets a constant width to argument collumn that is not
-// relative to the largest args length.
-//
-// This is useful --if-you-have-a-longer-than-usual-flag. And don't want
-// it to affect the argument collumn size.
-//
-// By default, if the argument len is larger than the specified
-// l, it will have its own line.
-func (u *Usages) SetArgLen(l int) {
-	if l > 0 {
-		u.maxArgLen = l
-	}
-}
-
-// PrintUsg() prints all the added usages to console.
-//
-// Upon calling this method the object is reseted to nil, and can be used // again. Breakpoint value from SetBreakpoint() is not affected.
-func (u *Usages) PrintUsg() {
-	var b int
-	if u.maxArgLen != 0 {
-		b = u.maxArgLen
-	} else {
-		b = u.longArgLen
-	}
-	for _, usage := range u.usageItem {
-		fmt.Print(SprintUsg(b, usage.argu, usage.descr))
-	}
-	*u = Usages{}
+// Format string with SprintWrap and print them with newline.
+func PrintlnWrap(marginLength int, s string) (int, error) {
+	return fmt.Println(SprintWrap(marginLength, s))
 }
