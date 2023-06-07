@@ -108,7 +108,7 @@ func SprintWrap(marginLength int, s string) string {
 
 // Format string with SprintWrap and print them.
 func PrintfWrap(marginLength int, format string, a ...interface{}) (int, error) {
-	return fmt.Print(SprintWrap(marginLength, fmt.Sprintf(format, a)))
+	return fmt.Print(SprintWrap(marginLength, fmt.Sprintf(format, a...)))
 }
 
 // Format string with SprintWrap and print them with newline.
