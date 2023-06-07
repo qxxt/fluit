@@ -58,25 +58,6 @@ func SprintWrap(marginLength int, s string) string {
 
 	s = marginString + s
 	for i := marginLength; i < len(s); i++ {
-		if columnIndex == bp {
-			columnIndex = 0
-
-			// SpaceIndex is -1 when there is no space found in the entire column.
-			// Mostly happen when the input is a long hash text.
-			if spaceIndex == -1 {
-				s = s[:i] + "\n" + marginString + s[i:]
-				i += marginLength
-			} else {
-				s = s[:spaceIndex] + "\n" + marginString + s[spaceIndex+1:]
-				i = spaceIndex + marginLength
-			}
-
-			statusBit = 0
-			spaceIndex = -1
-			columnIndex = 0
-			continue
-		}
-
 		switch s[i] {
 		case ' ', '\t':
 
@@ -98,6 +79,23 @@ func SprintWrap(marginLength int, s string) string {
 			if statusBit&isLetter == 0 {
 				statusBit |= isLetter
 			}
+		}
+
+		if columnIndex == bp {
+			// SpaceIndex is -1 when there is no space found in the entire column.
+			// Mostly happen when the input is a long hash text.
+			if spaceIndex == -1 {
+				s = s[:i] + "\n" + marginString + s[i:]
+				i += marginLength
+			} else {
+				s = s[:spaceIndex] + "\n" + marginString + s[spaceIndex+1:]
+				i = spaceIndex + marginLength
+			}
+
+			statusBit = 0
+			spaceIndex = -1
+			columnIndex = 0
+			continue
 		}
 
 		columnIndex++
