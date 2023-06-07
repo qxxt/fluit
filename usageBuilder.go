@@ -58,11 +58,13 @@ func (u *Usages) PrintUsages() {
 }
 
 // SprintUsage() build a usage and return it as string. If the length of
-// argument is larger than maxArgumentLength, argument will have its own line. For building usages
-// en mass. You should use type and method Usages instead.
+// argument is larger than maxArgumentLength, argument will have its own line.
+// Intended for testing only.
+//
+// For building usages en mass. You should use type and method Usages instead.
 func SprintUsage(maxArgumentLength int, argument, description string) string {
 	if maxArgumentLength < 10 || maxArgumentLength >= DefaultBreakpoint {
-		maxArgumentLength = 10
+		maxArgumentLength = 0
 	}
 
 	argumentRowLength := maxArgumentLength + (ArgumentPaddingLength * 2)
