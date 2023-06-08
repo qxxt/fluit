@@ -40,12 +40,11 @@ You can specify breakpoints at which the text will be wrapped to a new line. Thi
 ```
 
 This will make the output responsive to user's console width.
+![Peek 2023-06-08 18-27](https://github.com/qxxt/fluit/assets/57898942/01a0634c-5b10-41f3-89ce-66859d713ae0)
 
-
-However not all
+However not all terminal is supported. If you're trying to use it on emacs minibuffer it create an ignorable errors.
 
 ### Usage Builder
-
 
 ```go
     fluit.UserBreakpoint = 80
