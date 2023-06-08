@@ -104,12 +104,12 @@ func Wrap(marginLength int, s string) string {
 	return s
 }
 
-// Format string with SprintWrap and print them.
+// Format string with fmt.Sprintf() and Wrap() and print them.
 func PrintfWrap(marginLength int, format string, a ...interface{}) (int, error) {
 	return fmt.Print(Wrap(marginLength, fmt.Sprintf(format, a...)))
 }
 
-// Format string with SprintWrap and print them with newline.
+// Format string with Wrap() and print them with newline.
 func PrintlnWrap(marginLength int, s string) (int, error) {
 	return fmt.Println(Wrap(marginLength, s))
 }
