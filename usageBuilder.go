@@ -63,15 +63,20 @@ func (u *Usages) PrintUsages() {
 //
 // For building usages en mass. You should use type and method Usages instead.
 func SprintUsage(maxArgumentLength int, argument, description string) string {
-	if maxArgumentLength < 10 || maxArgumentLength >= DefaultBreakpoint {
+	bp := DefaultBreakpoint
+	if UserBreakpoint > 0 {
+		bp = UserBreakpoint
+	}
+
+	if maxArgumentLength < 10 || maxArgumentLength >= bp {
 		maxArgumentLength = 0
 	}
 
 	argumentRowLength := maxArgumentLength + (ArgumentPaddingLength * 2)
-	formatedDescription := SprintWrap(argumentRowLength, description)
+	formatedDescription := Wrap(argumentRowLength, description)
 
 	if len(argument) > maxArgumentLength {
-		return SprintWrap(ArgumentPaddingLength, argument) + "\n" + formatedDescription + "\n"
+		return Wrap(ArgumentPaddingLength, argument) + "\n" + formatedDescription + "\n"
 	}
 
 	formatedArgument := fmt.Sprintf("%*s%-*s", ArgumentPaddingLength, "", maxArgumentLength+ArgumentPaddingLength, argument)
