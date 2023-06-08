@@ -25,8 +25,8 @@ const DefaultBreakpoint int = 60
 // it will return loopback value of 0 or -1 value.
 var UserBreakpoint = -1
 
-// SprintfWrap() formats string using fmt.Sprintf and then wraps them with
-// breakpoint from UserBreakpoint. If UserBreakpoint is not set, it will use
+// Wrap() wraps strings with breakpoint from UserBreakpoint.
+// If UserBreakpoint is not set, it will use
 // the default value of 60 from constant Breakpoint.
 //
 // It also add margin with the size of marginLength. If marginLength is set to
@@ -34,7 +34,7 @@ var UserBreakpoint = -1
 // it's negative or if it's larger than the breakpoint's length.
 //
 // It returns string without print them to stdout.
-func SprintWrap(marginLength int, s string) string {
+func Wrap(marginLength int, s string) string {
 	bp := DefaultBreakpoint
 	if UserBreakpoint > 0 {
 		bp = UserBreakpoint
@@ -106,10 +106,10 @@ func SprintWrap(marginLength int, s string) string {
 
 // Format string with SprintWrap and print them.
 func PrintfWrap(marginLength int, format string, a ...interface{}) (int, error) {
-	return fmt.Print(SprintWrap(marginLength, fmt.Sprintf(format, a...)))
+	return fmt.Print(Wrap(marginLength, fmt.Sprintf(format, a...)))
 }
 
 // Format string with SprintWrap and print them with newline.
 func PrintlnWrap(marginLength int, s string) (int, error) {
-	return fmt.Println(SprintWrap(marginLength, s))
+	return fmt.Println(Wrap(marginLength, s))
 }
