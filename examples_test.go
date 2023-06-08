@@ -36,13 +36,13 @@ func ExampleUserBreakpoint() {
 
 func ExampleSprintWrap() {
 	// In essence fluit is a string formatter.
-	str := fluit.SprintWrap(4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod pharetra sodales. Aenean ac massa dictum, gravida nisl non, fermentum turpis.")
+	str := fluit.Wrap(4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod pharetra sodales. Aenean ac massa dictum, gravida nisl non, fermentum turpis.")
 	fmt.Println(str)
 
-	fmt.Println(fluit.SprintWrap(10, strings.Repeat("-+", 20)))
+	fmt.Println(fluit.Wrap(10, strings.Repeat("-+", 20)))
 
 	// If the margin is set to 0, it will not be margined but still wrapped according to breakpoint.
-	fmt.Println(fluit.SprintWrap(0, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod pharetra sodales. Aenean ac massa dictum, gravida nisl non, fermentum turpis."))
+	fmt.Println(fluit.Wrap(0, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus euismod pharetra sodales. Aenean ac massa dictum, gravida nisl non, fermentum turpis."))
 
 	// Output:
 	//     Lorem ipsum dolor sit amet, consectetur adipiscing elit.
